@@ -1,0 +1,34 @@
+
+/*
+ Creating an iterator class for the linkedlist 
+*/
+
+import java.util.Iterator;
+
+public class myIterator<T> implements Iterator<T> {
+
+	private Node<T> pos; // position of node
+
+	// starting position at head of list
+	public myIterator(LinkedList<T> list) {
+		pos = list.head;
+	}
+
+	// checking if list has a next value
+	public boolean hasNext() {
+		// checking position
+		if (pos == null) {
+			return false;
+		}
+		return true;
+	}
+
+	// returning next data value
+	public T next() {
+		// increment position
+		T data = pos.data;
+		pos = pos.next;
+		return data;
+	}
+
+}
