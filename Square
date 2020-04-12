@@ -1,0 +1,54 @@
+
+/*
+ This class models the individual squares inside the small
+ tic-tac-toe boards 
+*/
+import java.io.IOException;
+
+public class Square extends Board {
+
+	// default constructor
+	public Square() {
+		status = NONE;
+	}
+
+	// implementing stub method
+	@Override
+	public void placePiece(Point largePos, Point smallPos, char piece) throws IOException {
+		// changes status depending on piece
+		if (piece == 'X') {
+			status = X;
+		} else if (piece == 'O') {
+			status = O;
+		}
+
+	}
+
+	// checking if the square is empty
+	public boolean isEmpty() {
+		// check status
+		if (status == NONE) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// what to print out in the square
+	public String toString() {
+		// print appropriate char
+		if (status == 1) {
+			return "X";
+		} else if (status == 2) {
+			return "O";
+		} else {
+			return " ";
+		}
+	}
+
+	// removing a piece from the board
+	public void removePiece() {
+		status = NONE;
+	}
+
+}
