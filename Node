@@ -1,0 +1,26 @@
+/*
+ Basic node class for creating the
+ linkedlist class 
+*/
+
+public class Node<T> {
+	// components of a node object
+	T data;
+	Node<T> next;
+
+	// setting the node's data
+	public Node(T d) {
+		data = d;
+	}
+
+	// getting data of a node
+	public T getData() {
+		return data;
+	}
+
+	// getting the next node
+	public Node<T> getNext() {
+		return next;
+	}
+
+}
