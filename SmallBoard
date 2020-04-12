@@ -69,7 +69,7 @@ public class SmallBoard extends Board<Square> {
 
 				}
 				if (i != 2) {
-					boardString += "\n----------\n";
+					boardString += "\n ---------\n";
 				}
 			}
 		} else if (status == 1) { // if X has won the square
