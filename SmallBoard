@@ -1,0 +1,196 @@
+
+/*
+ This class extends the generic board class and models
+ a small board with pieces in it.
+*/
+
+import java.io.IOException;
+
+public class SmallBoard extends Board<Square> {
+
+	// default constructor
+	public SmallBoard() {
+		super();
+		// looping through 2D array
+		for (int i = 0; i < 3; i++) {
+			// instantiating new square objects
+			board.add(new LinkedList<Square>());
+			for (int j = 0; j < 3; j++) {
+				board.get(i).add(new Square());
+			}
+		}
+	}
+
+	// implementing stub method
+	@Override
+	public void placePiece(Point largePos, Point smallPos, char piece) throws IOException {
+		if (!isOccupied(smallPos)) { // checking if square is occupied
+			// if not occupied then place it
+			board.get(smallPos.getX()).get(smallPos.getY()).placePiece(largePos, smallPos, piece);
+			int pieceNum = 2;
+			if (piece == 'X') {
+				pieceNum = 1;
+			}
+			// checking for any solved squares
+			updateStatus(smallPos, pieceNum);
+		} else {
+			throw new IOException();
+		}
+
+	}
+
+	// gets the unoccupied spots in the small board
+	public LinkedList<Point> getOpenSpots() {
+		LinkedList<Point> openPoints = new LinkedList<Point>();
+		// looping through each square
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				// add to list if unoccupied
+				if (!isOccupied(new Point(i, j))) {
+					openPoints.add(new Point(i, j));
+				}
+			}
+		}
+
+		return openPoints;
+	}
+
+	// printing out the small board contents
+	public String printBoard() {
+		String boardString = "\n";
+		if (status == 0) { // regular tic-tac-toe board
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (j == 2) {
+						boardString += " " + board.get(i).get(j);
+					} else {
+						boardString += " " + board.get(i).get(j) + " |";
+					}
+
+				}
+				if (i != 2) {
+					boardString += "\n----------\n";
+				}
+			}
+		} else if (status == 1) { // if X has won the square
+			boardString = "     \\    /\n" + "      \\  /\n" + "       \\/\n" + "       /\\\n" + "      /  \\\n"
+					+ "     /    \\\n";
+
+		} else { // if O has won the square
+			boardString = "    _______\n" + "   /       \\\n" + "  /         \\\n" + " /           \\\n"
+					+ " \\           /\n" + "  \\         /\n" + "   \\_______/";
+		}
+		return boardString;
+	}
+
+	// checking if a certain square is occupied
+	public boolean isOccupied(Point p) {
+		// checking status
+		if (board.get(p.getX()).get(p.getY()).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	// getting all the pieces that would form 3 in a row
+	public LinkedList<Point> getWinningPieces(char piece) {
+
+		// getting numeric value of piece
+		int intPiece = 2;
+		if (piece == 'X') {
+			intPiece = 1;
+		}
+
+		LinkedList<Point> winningPieces = new LinkedList<Point>();
+
+		// checking columns
+		for (int i = 0; i < 3; i++) {
+			int count = 0;
+			for (int j = 0; j < 2; j++) {
+				// check first two elements in each column
+				if (board.get(j).get(i).getStatus() == intPiece)
+					count++;
+				if (j == 1) {
+					if (count == 2) { // third one is the winner
+						if (!isOccupied(new Point(j + 1, i)))
+							winningPieces.add(new Point(j + 1, i));
+					} else if (count == 1) { // only one matched
+						// finding out which two were the matches
+						if (board.get(j + 1).get(i).getStatus() == intPiece) {
+							// adding the other as the winner
+							if (board.get(j).get(i).getStatus() == intPiece) {
+								if (!isOccupied(new Point(j - 1, i)))
+									winningPieces.add(new Point(j - 1, i));
+							} else {
+								if (!isOccupied(new Point(j, i)))
+									winningPieces.add(new Point(j, i));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// checking rows
+		for (int i = 0; i < 3; i++) {
+			int count = 0;
+			for (int j = 0; j < 2; j++) {
+				// check first two elements in each row
+				if (board.get(i).get(j).getStatus() == intPiece)
+					count++;
+				if (j == 1) {
+					if (count == 2) { // third one is the winner
+						if (!isOccupied(new Point(i, j + 1)))
+							winningPieces.add(new Point(i, j + 1));
+					} else if (count == 1) { // only one matched
+						// finding out which two were the matches
+						if (board.get(i).get(j + 1).getStatus() == intPiece) {
+							// adding the other as the winner
+							if (board.get(i).get(j).getStatus() == intPiece) {
+								if (!isOccupied(new Point(i, j - 1)))
+									winningPieces.add(new Point(i, j - 1));
+							} else {
+								if (!isOccupied(new Point(i, j)))
+									winningPieces.add(new Point(i, j));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// checking right diagonal
+		if (board.get(0).get(0).getStatus() == intPiece && board.get(1).get(1).getStatus() == intPiece) {
+			if (!isOccupied(new Point(2, 2)))
+				winningPieces.add(new Point(2, 2));
+		} else if (board.get(1).get(1).getStatus() == intPiece && board.get(2).get(2).getStatus() == intPiece) {
+			if (!isOccupied(new Point(0, 0)))
+				winningPieces.add(new Point(0, 0));
+		} else if (board.get(0).get(0).getStatus() == intPiece && board.get(2).get(2).getStatus() == intPiece) {
+			if (!isOccupied(new Point(1, 1)))
+				winningPieces.add(new Point(1, 1));
+		}
+
+		// checing left diagonal
+		if (board.get(0).get(2).getStatus() == intPiece && board.get(1).get(1).getStatus() == intPiece) {
+			if (!isOccupied(new Point(2, 0)))
+				winningPieces.add(new Point(2, 0));
+		} else if (board.get(1).get(1).getStatus() == intPiece && board.get(2).get(0).getStatus() == intPiece) {
+			if (!isOccupied(new Point(0, 2)))
+				winningPieces.add(new Point(0, 2));
+		} else if (board.get(0).get(2).getStatus() == intPiece && board.get(2).get(0).getStatus() == intPiece) {
+			if (!isOccupied(new Point(1, 1)))
+				winningPieces.add(new Point(1, 1));
+		}
+
+		return winningPieces;
+
+	}
+
+	// removing a certain computer piece from the board
+	public void unplaceCompPiece(Point largePos, Point smallPos) {
+		board.get(smallPos.getX()).get(smallPos.getY()).removePiece();
+	}
+
+}
