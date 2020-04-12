@@ -1,0 +1,49 @@
+
+/*
+ This class extends the generic board class and models
+ a board with small board objects contained in it.
+*/
+
+import java.io.IOException;
+
+public class BigBoard extends Board<SmallBoard> {
+
+	// default constructor
+	public BigBoard() {
+		super();
+		// loop through 2D array
+		for (int i = 0; i < 3; i++) {
+			// instantiating each small board
+			board.add(new LinkedList<SmallBoard>());
+			for (int j = 0; j < 3; j++) {
+				board.get(i).add(new SmallBoard());
+			}
+		}
+	}
+
+	// implementing stub method
+	@Override
+	public void placePiece(Point largePos, Point smallPos, char piece) throws IOException {
+		try {
+			if (board.get(largePos.getX()).get(largePos.getY()).getStatus() != 0) {
+				throw new IOException();
+			}
+
+			// place piece in specified small board
+			board.get(largePos.getX()).get(largePos.getY()).placePiece(largePos, smallPos, piece);
+			int pieceNum = 2;
+			if (piece == 'X') {
+				pieceNum = 1;
+			}
+			// check for any solved squares
+			updateStatus(largePos, pieceNum);
+		} catch (IOException e) {
+			throw new IOException();
+		}
+	}
+
+	// returning specified small board object
+	public SmallBoard getSmallBoard(Point p) {
+		return board.get(p.getX()).get(p.getY());
+	}
+}
