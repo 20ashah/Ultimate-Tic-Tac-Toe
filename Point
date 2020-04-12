@@ -1,0 +1,27 @@
+/*
+ This is a simple point object with a x
+ and y component
+*/
+public class Point {
+
+	// object components
+	private int x;
+	private int y;
+
+	// constructor for setting point
+	public Point(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	// getting x component
+	public int getX() {
+		return x;
+	}
+
+	// getting y component
+	public int getY() {
+		return y;
+	}
+
+}
