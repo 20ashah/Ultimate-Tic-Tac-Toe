@@ -1,0 +1,163 @@
+
+/*
+ This class models a computer player in the game. In this 
+ version, the computer isn't intelligent but rather just
+ moves randomly.
+*/
+
+import java.io.IOException;
+import java.util.Random;
+
+public class Computer {
+
+	private BigBoard board; // actual game board
+	private Random random = new Random();
+
+	// constructor for transfering board
+	public Computer(BigBoard b) {
+		board = b;
+	}
+
+	// making the computer's move
+	public Point[] makeMove(Point userSmall) {
+		Point[] compMove = new Point[2];
+		// generating computer's large position move
+		if (board.getSmallBoard(userSmall).getStatus() != 0) { // free
+			compMove[0] = getRandomLarge(); // random
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					Point temp = new Point(i, j);
+					// find two in a row across the entire board
+					LinkedList<Point> tempList = board.getSmallBoard(temp).getWinningPieces('O');
+					if (tempList.size() != 0) {
+						compMove[0] = temp;
+						compMove[1] = tempList.get(0);
+						return compMove;
+					}
+				}
+			}
+		} else {
+			compMove[0] = userSmall; // determined by user's move
+		}
+
+		// list of all places that the computer could win the small board
+		LinkedList<Point> compWins = board.getSmallBoard(compMove[0]).getWinningPieces('O');
+
+		// list of all places that the computer could block the user
+		LinkedList<Point> blockUserWins = board.getSmallBoard(compMove[0]).getWinningPieces('X');
+
+		// list of all open places in that small board
+		LinkedList<Point> openPoints = board.getSmallBoard(compMove[0]).getOpenSpots();
+
+		// checking if any open places were a computer win
+		for (int i = 0; i < openPoints.size(); i++) {
+			if (contains(compWins, openPoints.get(i))) {
+				compMove[1] = openPoints.get(i);
+				return compMove;
+			}
+		}
+
+		// taking away all points that would give the user a free move
+		LinkedList<Point> openPoints2 = new LinkedList<Point>();
+		for (int i = 0; i < openPoints.size(); i++) {
+			if (board.getSmallBoard(openPoints.get(i)).getStatus() == 0) {
+				openPoints2.add(openPoints.get(i));
+			}
+		}
+
+		// checking if any open places could block the user
+		for (int i = 0; i < openPoints2.size(); i++) {
+			if (contains(blockUserWins, openPoints2.get(i))) {
+				compMove[1] = openPoints2.get(i);
+				return compMove;
+			}
+		}
+
+		// taking away any places for user to win
+		LinkedList<Point> openPoints3 = new LinkedList<Point>();
+		for (int i = 0; i < openPoints2.size(); i++) {
+			if (board.getSmallBoard(openPoints2.get(i)).getWinningPieces('X').size() == 0) {
+				openPoints3.add(openPoints2.get(i));
+			}
+		}
+
+		// taking away any places where comp could be blocked
+		LinkedList<Point> openPoints4 = new LinkedList<Point>();
+		for (int i = 0; i < openPoints3.size(); i++) {
+			if (board.getSmallBoard(openPoints3.get(i)).getWinningPieces('O').size() == 0) {
+				openPoints4.add(openPoints3.get(i));
+			}
+		}
+
+		if (openPoints4.size() == 0) { // no optimal spots left
+			if (openPoints3.size() == 0) {
+				compMove[1] = getRandomSmall(compMove[0]); // last resort
+			} else {
+				compMove[1] = openPoints3.get(0);
+			}
+
+		} else {
+			compMove[1] = openPoints4.get(0); // default
+
+			// looping through each optimal spot
+			for (int i = 0; i < openPoints4.size(); i++) {
+				try { // place it as a test
+					board.placePiece(compMove[0], openPoints4.get(i), 'O');
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				// check if it would set up for 2 in a row
+				if (board.getSmallBoard(compMove[0]).getWinningPieces('O').size() == 0) {
+					board.getSmallBoard(compMove[0]).unplaceCompPiece(compMove[0], openPoints4.get(i));
+				} else { // keep it if on the same row
+					compMove[1] = openPoints4.get(i);
+					return compMove;
+				}
+			}
+
+		}
+
+		return compMove;
+
+	}
+
+	// checking if a point is in a list
+	private boolean contains(LinkedList<Point> list, Point p) {
+		for (int i = 0; i < list.size(); i++) {
+			// if the points match
+			if (list.get(i).getX() == p.getX() && list.get(i).getY() == p.getY()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// generating random large position
+	private Point getRandomLarge() {
+		int x = random.nextInt(3);
+		int y = random.nextInt(3);
+		Point p = new Point(x, y);
+		// making sure point is valid
+		while (board.getSmallBoard(p).getStatus() != 0) {
+			x = random.nextInt(3);
+			y = random.nextInt(3);
+			p = new Point(x, y);
+		}
+		return p;
+	}
+
+	// generating random small position
+	private Point getRandomSmall(Point userSmall) {
+		int x = random.nextInt(3);
+		int y = random.nextInt(3);
+		Point p = new Point(x, y);
+		// making sure point is valid
+		while (board.getSmallBoard(userSmall).isOccupied(p)) {
+			x = random.nextInt(3);
+			y = random.nextInt(3);
+			p = new Point(x, y);
+		}
+		return p;
+	}
+
+}
