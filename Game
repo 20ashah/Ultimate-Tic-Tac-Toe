@@ -1,0 +1,59 @@
+
+/*
+ This is the game class that contains the game board and the 
+ computer. This class contains much of the logic. 
+*/
+
+import java.io.IOException;
+
+public class Game {
+
+	// declar einstance variables
+	private BigBoard board;
+	private Computer comp;
+
+	// constructor for setting board
+	public Game() {
+		board = new BigBoard();
+		comp = new Computer(board);
+	}
+
+	// checking if there is a winner
+	public boolean hasWon() {
+		// checking status
+		if (board.getStatus() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	// printing a particular small board
+	public String print(Point p) {
+		return board.getSmallBoard(p).printBoard();
+	}
+
+	// placing an entered piece onto the board
+	public void placePiece(Point large, Point small, char piece) throws IOException {
+		try {
+			board.placePiece(large, small, piece);
+		} catch (IOException e) {
+			throw new IOException();
+		}
+	}
+
+	// determining large position based on opponent's move
+	public Point determineLargePos(Point oppSmallPos) {
+		// free choice if occupied
+		if (board.getSmallBoard(oppSmallPos).getStatus() != 0) {
+			return new Point(-1, -1);
+		}
+		return oppSmallPos;
+	}
+
+	// making a move for the computer
+	public Point[] makeCompMove(Point userSmall) {
+		return comp.makeMove(userSmall);
+	}
+
+}
