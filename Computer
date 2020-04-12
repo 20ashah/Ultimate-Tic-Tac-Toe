@@ -1,8 +1,7 @@
 
 /*
  This class models a computer player in the game. In this 
- version, the computer isn't intelligent but rather just
- moves randomly.
+ version, the computer is intelligent.
 */
 
 import java.io.IOException;
