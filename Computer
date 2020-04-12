@@ -93,11 +93,13 @@ public class Computer {
 			if (openPoints3.size() == 0) {
 				compMove[1] = getRandomSmall(compMove[0]); // last resort
 			} else {
-				compMove[1] = openPoints3.get(0);
+				int rand = random.nextInt(openPoints3.size());
+				compMove[1] = openPoints3.get(rand);
 			}
 
 		} else {
-			compMove[1] = openPoints4.get(0); // default
+			int rand = random.nextInt(openPoints4.size());
+			compMove[1] = openPoints4.get(rand); // default
 
 			// looping through each optimal spot
 			for (int i = 0; i < openPoints4.size(); i++) {
