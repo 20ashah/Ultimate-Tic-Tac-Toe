@@ -1,0 +1,69 @@
+/*
+ This class implements a LinkedList class using nodes and
+ the Iterable interface. 
+*/
+public class LinkedList<T> implements Iterable<T> {
+
+	Node<T> head; // head node of list
+
+	// default constructor
+	public LinkedList() {
+		head = null;
+	}
+
+	// returning the size of the list
+	public int size() {
+		myIterator<T> iterator = iterator();
+		int count = 0;
+		// increment count for each element
+		while (iterator.hasNext()) {
+			iterator.next();
+			count++;
+		}
+		return count;
+	}
+
+	// getting the element at a given index
+	public T get(int index) {
+		// declaring iterator for the list
+		myIterator<T> iterator = iterator();
+		int count = 0;
+		// go to next element until index is reached
+		while (iterator.hasNext()) {
+			T num = iterator.next();
+			if (count == index) {
+				return num;
+			}
+			count++;
+		}
+		return null;
+	}
+
+	// adding an element to the list
+	public void add(T data) {
+		// creating new node and new spot
+		Node<T> new_node = new Node(data);
+		new_node.next = null;
+
+		// adding to list
+		if (this.head == null) { // making it first if head is null
+			this.head = new_node;
+		} else { // adding the new node onto the end
+			Node<T> last = this.head;
+			while (last.next != null) {
+				last = last.next;
+			}
+
+			last.next = new_node;
+		}
+
+	}
+
+	// implementing stub method
+	@Override
+	public myIterator<T> iterator() {
+		// return the iterator
+		return new myIterator<T>(this);
+	}
+
+}
