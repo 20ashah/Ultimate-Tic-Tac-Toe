@@ -1,0 +1,84 @@
+
+/*
+ This abstract class modeled a generic board that would serve as templates 
+ for the different kinds of boards used in the game.
+*/
+
+import java.io.IOException;
+
+public abstract class Board<T> {
+
+	// shared properties of all boards
+	protected int status;
+	protected final int X = 1;
+	protected final int O = 2;
+	protected final int NONE = 0;
+	protected LinkedList<LinkedList<T>> board = new LinkedList<LinkedList<T>>();
+
+	// default constructor
+	public Board() {
+		status = NONE;
+	}
+
+	// abstract method for placing a piece on the board
+	public abstract void placePiece(Point largePos, Point smallPos, char piece) throws IOException;
+
+	// checking for wins across the board
+	public int updateStatus(Point last, int piece) {
+		// checking columns
+		for (int i = 0; i < 3; i++) {
+			if (((Board<T>) board.get(last.getX()).get(i)).getStatus() != piece)
+				break;
+			if (i == 2) { // win for that piece
+				status = piece;
+				return piece;
+			}
+		}
+
+		// checking rows
+		for (int i = 0; i < 3; i++) {
+			if (((Board<T>) board.get(i).get(last.getY())).getStatus() != piece)
+				break;
+			if (i == 2) { // win for that piece
+				status = piece;
+				return piece;
+			}
+		}
+
+		// checking right diagonal
+		if (last.getX() == last.getY()) {
+			// on a right diagonal
+			for (int i = 0; i < 3; i++) {
+				if (((Board<T>) board.get(i).get(i)).getStatus() != piece)
+					break;
+				if (i == 2) { // win for that piece
+					status = piece;
+					return piece;
+				}
+			}
+		}
+
+		// checking left diagonal
+		if (last.getX() + last.getY() == 2) {
+			// on a left diagonal
+			for (int i = 0; i < 3; i++) {
+				if (((Board<T>) board.get(i).get(2 - i)).getStatus() != piece)
+					break;
+				if (i == 2) { // win for that piece
+					status = piece;
+					return piece;
+				}
+			}
+		}
+
+		// if no wins then set status to empty
+		status = 0;
+		return 0;
+	}
+
+	// returning status of the board
+	public int getStatus() {
+		return status;
+	}
+
+}
