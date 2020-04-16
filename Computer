@@ -28,7 +28,7 @@ public class Computer {
 					Point temp = new Point(i, j);
 					// find two in a row across the entire board
 					LinkedList<Point> tempList = board.getSmallBoard(temp).getWinningPieces('O');
-					if (tempList.size() != 0) {
+					if (tempList.size() != 0 && board.getSmallBoard(temp).getStatus() == 0) {
 						compMove[0] = temp;
 						compMove[1] = tempList.get(0);
 						return compMove;
@@ -105,13 +105,14 @@ public class Computer {
 				try { // place it as a test
 					board.placePiece(compMove[0], openPoints4.get(i), 'O');
 				} catch (IOException e) {
-					e.printStackTrace();
 				}
+
 				// check if it would set up for 2 in a row
 				if (board.getSmallBoard(compMove[0]).getWinningPieces('O').size() == 0) {
 					board.getSmallBoard(compMove[0]).unplaceCompPiece(compMove[0], openPoints4.get(i));
 				} else { // keep it if on the same row
 					compMove[1] = openPoints4.get(i);
+					board.getSmallBoard(compMove[0]).unplaceCompPiece(compMove[0], openPoints4.get(i));
 					return compMove;
 				}
 			}
