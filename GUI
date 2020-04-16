@@ -2,217 +2,29 @@
 /*
  Arjun Shah
  B Block
- 4/17/2020
+ 4/20/2020
  Program Description: 
  This project is creating the game Ultiamate-Tic-Tac-Toe. The
  data structure used in this project was a linkedlist which was
- coded from scratch. 
+ coded from scratch. This GUI is interactive as you can tap
+ the squares in the board to place 
 */
 
+import javax.swing.*;
+import BreezySwing.*;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+public class GUI2 extends GBFrame {
 
-import BreezySwing.GBFrame;
-
-public class GUI extends GBFrame {
-
-	// GUI components
-	private JTextArea tl, tm, tr, ml, mm, mr, bl, bm, br;
-	private JLabel playerL;
-	private JTextField playerLF, playerSF;
-	private JButton moveB;
-
-	private Timer timer;
-
-	private Game game = new Game(); // creating a new game instance
-
-	// constructor for placing GUI components onto window
-	public GUI() {
-		tl = addTextArea(game.print(new Point(0, 0)), 1, 1, 1, 1);
-		tm = addTextArea(game.print(new Point(0, 1)), 1, 2, 1, 1);
-		tr = addTextArea(game.print(new Point(0, 2)), 1, 3, 1, 1);
-		ml = addTextArea(game.print(new Point(1, 0)), 2, 1, 1, 1);
-		mm = addTextArea(game.print(new Point(1, 1)), 2, 2, 1, 1);
-		mr = addTextArea(game.print(new Point(1, 2)), 2, 3, 1, 1);
-		bl = addTextArea(game.print(new Point(2, 0)), 3, 1, 1, 1);
-		bm = addTextArea(game.print(new Point(2, 1)), 3, 2, 1, 1);
-		br = addTextArea(game.print(new Point(2, 2)), 3, 3, 1, 1);
-		tl.setEditable(false);
-		tm.setEditable(false);
-		tr.setEditable(false);
-		ml.setEditable(false);
-		mm.setEditable(false);
-		mr.setEditable(false);
-		bl.setEditable(false);
-		bm.setEditable(false);
-		br.setEditable(false);
-		playerL = addLabel("(Out, In) : X Y", 4, 1, 1, 1);
-		playerLF = addTextField("", 4, 2, 1, 1);
-		playerSF = addTextField("", 4, 3, 1, 1);
-		moveB = addButton("Place", 4, 4, 1, 1);
-	}
-
-	// performing actions when buttons are clicked
-	public void buttonClicked(JButton button) {
-		Point userSmall = null;
-		Point userLarge = null;
-		int error = 0; // if an error is present
-		if (button == moveB) { // if user clicks the place button
-			try {
-				// parsing user input into point objects
-				userLarge = new Point(Integer.parseInt(playerLF.getText().substring(0, 1)),
-						Integer.parseInt(playerLF.getText().substring(2, 3)));
-				userSmall = new Point(Integer.parseInt(playerSF.getText().substring(0, 1)),
-						Integer.parseInt(playerSF.getText().substring(2, 3)));
-			} catch (Exception e) {
-				error = 1;
-				messageBox("Incorrect format. (X Y)");
-			}
-
-			if (error == 0) {
-				try {
-					// checking points
-					if (!isValidPoint(userLarge) || !isValidPoint(userSmall)) {
-						throw new IOException();
-					}
-
-					game.placePiece(userLarge, userSmall, 'X');
-
-					// print new board and check for a winner
-					updateBoard();
-
-					if (game.hasWon()) {
-						messageBox("YOU WIN!!!");
-						System.exit(0);
-					}
-					playerLF.setText("");
-					playerSF.setText("");
-				} catch (IOException e) {
-					error = 1;
-					messageBox("Invalid move!");
-				}
-
-			}
-
-			playerSF.requestFocus();
-		}
-
-		// computer's move
-		if (error == 0) { // if user's move went through
-
-			Point[] compMove = game.makeCompMove(userSmall);
-
-			// adding delay between user and computer's move
-			timer = new Timer(1000, new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// place computer's piece and update board
-					try {
-						game.placePiece(compMove[0], compMove[1], 'O');
-					} catch (Exception e2) {
-					}
-
-					updateBoard();
-					if (game.hasWon()) { // checking winner
-						messageBox("YOU LOST!!!");
-						System.exit(0);
-					}
-
-					// determining user's next move
-					Point userLarge2 = game.determineLargePos(compMove[1]);
-					playerLF.setEditable(true);
-					resetColors(); // remove highlights
-
-					// showing user's next move graphically
-					if (userLarge2.getX() != -1) {
-						showNextMove(userLarge2);
-						playerLF.setText(userLarge2.getX() + " " + userLarge2.getY());
-						playerLF.setEditable(false);
-					} else {
-						playerLF.requestFocus();
-					}
-					timer.stop(); // stop after one time
-				}
-			});
-			timer.start(); // trigger action
-
-		}
-	}
-
-	// checking if a point is valid for the board
-	public static boolean isValidPoint(Point p) {
-		// checking index out of bound errors
-		if (p.getX() > 2 || p.getX() < 0 || p.getY() > 2 || p.getY() < 0) {
-			return false;
-		}
-		return true;
-	}
-
-	// highlights next square user has to go in
-	public void showNextMove(Point large) {
-		resetColors();
-		if (large.getX() == 0 && large.getY() == 0) {
-			tl.setBackground(Color.YELLOW);
-		} else if (large.getX() == 0 && large.getY() == 1) {
-			tm.setBackground(Color.YELLOW);
-		} else if (large.getX() == 0 && large.getY() == 2) {
-			tr.setBackground(Color.YELLOW);
-		} else if (large.getX() == 1 && large.getY() == 0) {
-			ml.setBackground(Color.YELLOW);
-		} else if (large.getX() == 1 && large.getY() == 1) {
-			mm.setBackground(Color.YELLOW);
-		} else if (large.getX() == 1 && large.getY() == 2) {
-			mr.setBackground(Color.YELLOW);
-		} else if (large.getX() == 2 && large.getY() == 0) {
-			bl.setBackground(Color.YELLOW);
-		} else if (large.getX() == 2 && large.getY() == 1) {
-			bm.setBackground(Color.YELLOW);
-		} else if (large.getX() == 2 && large.getY() == 2) {
-			br.setBackground(Color.YELLOW);
-		}
-	}
-
-	// resets each square's color
-	public void resetColors() {
-		tl.setBackground(Color.WHITE);
-		tm.setBackground(Color.WHITE);
-		tr.setBackground(Color.WHITE);
-		ml.setBackground(Color.WHITE);
-		mm.setBackground(Color.WHITE);
-		mr.setBackground(Color.WHITE);
-		bl.setBackground(Color.WHITE);
-		bm.setBackground(Color.WHITE);
-		br.setBackground(Color.WHITE);
-	}
-
-	// printing out the updated versions of each board
-	public void updateBoard() {
-		tl.setText(game.print(new Point(0, 0)));
-		tm.setText(game.print(new Point(0, 1)));
-		tr.setText(game.print(new Point(0, 2)));
-		ml.setText(game.print(new Point(1, 0)));
-		mm.setText(game.print(new Point(1, 1)));
-		mr.setText(game.print(new Point(1, 2)));
-		bl.setText(game.print(new Point(2, 0)));
-		bm.setText(game.print(new Point(2, 1)));
-		br.setText(game.print(new Point(2, 2)));
-	}
+	// create panel that has all the functionality
+	GBPanel panel = addPanel(new GUI2PANEL(Color.white), 1, 1, 1, 1);
 
 	// main method
 	public static void main(String[] args) {
-		GUI window = new GUI();
-		window.setSize(500, 500);
-		window.setVisible(true);
-		window.setTitle("Ultimate Tic-Tac-Toe");
+		JFrame frm = new GUI2();
+		frm.setSize(550, 600);
+		frm.setVisible(true);
+		frm.setTitle("Ultimate Tic-Tac-Toe");
 	}
 
 }
