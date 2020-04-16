@@ -42,7 +42,7 @@ public class Square extends Board {
 		} else if (status == 2) {
 			return "O";
 		} else {
-			return " ";
+			return "  ";
 		}
 	}
 
