@@ -69,16 +69,16 @@ public class SmallBoard extends Board<Square> {
 
 				}
 				if (i != 2) {
-					boardString += "\n ---------\n";
+					boardString += "\n-----------\n";
 				}
 			}
 		} else if (status == 1) { // if X has won the square
-			boardString = "     \\    /\n" + "      \\  /\n" + "       \\/\n" + "       /\\\n" + "      /  \\\n"
+			boardString = "\n     \\    /\n" + "      \\  /\n" + "       \\/\n" + "       /\\\n" + "      /  \\\n"
 					+ "     /    \\\n";
 
 		} else { // if O has won the square
-			boardString = "    _______\n" + "   /       \\\n" + "  /         \\\n" + " /           \\\n"
-					+ " \\           /\n" + "  \\         /\n" + "   \\_______/";
+			boardString = "   _______\n" + "  /              \\\n" + " /                \\\n"
+					+ "/                  \\\n" + "\\                  /\n" + " \\                /\n" + "  \\______/";
 		}
 		return boardString;
 	}
