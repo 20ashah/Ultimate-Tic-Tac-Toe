@@ -1,0 +1,235 @@
+
+/*
+ Panel that contains the graphics for the tic tac toe game. Instead
+ of using breezy swing, these graphics allow for a better user
+ experience. 
+*/
+
+import BreezySwing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+public class GUI2PANEL extends GBPanel {
+
+	// coordinates for mouse pressing
+	private int mouseX;
+	private int mouseY;
+
+	// back end instance variables
+	private Game game = new Game();
+	private Timer timer;
+	private Point determined = null;
+
+	// creating panel
+	public GUI2PANEL(Color color) {
+		setBackground(color);
+	}
+
+	// repainting panel every time method is called
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Font font = new Font("Verdana", Font.BOLD, 16);
+		g.setFont(font);
+		g.setColor(Color.gray);
+
+		// drawing board lines
+		g.drawLine(155, 20, 155, 545);
+		g.drawLine(340, 20, 340, 545);
+		g.drawLine(15, 180, 485, 180);
+		g.drawLine(15, 375, 485, 375);
+
+		// drawing each individual board
+		draw(g, game.print(new Point(0, 0)), 30, 20);
+		draw(g, game.print(new Point(0, 1)), 200, 20);
+		draw(g, game.print(new Point(0, 2)), 380, 20);
+		draw(g, game.print(new Point(1, 0)), 30, 200);
+		draw(g, game.print(new Point(1, 1)), 200, 200);
+		draw(g, game.print(new Point(1, 2)), 380, 200);
+		draw(g, game.print(new Point(2, 0)), 30, 380);
+		draw(g, game.print(new Point(2, 1)), 200, 380);
+		draw(g, game.print(new Point(2, 2)), 380, 380);
+
+		// drawing box around user's next box
+		if (determined != null && determined.getX() != -1) {
+			g.setColor(Color.blue);
+			if (determined.getX() == 0 && determined.getY() == 0) {
+				g.drawLine(12, 30, 135, 30);
+				g.drawLine(12, 30, 12, 165);
+				g.drawLine(12, 165, 135, 165);
+				g.drawLine(135, 165, 135, 30);
+			} else if (determined.getX() == 0 && determined.getY() == 1) {
+				g.drawLine(180, 30, 311, 30);
+				g.drawLine(180, 30, 180, 165);
+				g.drawLine(180, 165, 311, 165);
+				g.drawLine(311, 165, 311, 30);
+			} else if (determined.getX() == 0 && determined.getY() == 2) {
+				g.drawLine(359, 30, 482, 30);
+				g.drawLine(359, 30, 359, 165);
+				g.drawLine(359, 165, 482, 165);
+				g.drawLine(482, 165, 482, 30);
+			} else if (determined.getX() == 1 && determined.getY() == 0) {
+				g.drawLine(12, 205, 135, 205);
+				g.drawLine(12, 205, 12, 350);
+				g.drawLine(12, 350, 135, 350);
+				g.drawLine(135, 350, 135, 205);
+			} else if (determined.getX() == 1 && determined.getY() == 1) {
+				g.drawLine(180, 204, 306, 204);
+				g.drawLine(180, 204, 180, 352);
+				g.drawLine(180, 352, 306, 352);
+				g.drawLine(306, 352, 306, 204);
+			} else if (determined.getX() == 1 && determined.getY() == 2) {
+				g.drawLine(359, 204, 482, 204);
+				g.drawLine(359, 204, 359, 350);
+				g.drawLine(359, 350, 482, 350);
+				g.drawLine(482, 350, 482, 204);
+			} else if (determined.getX() == 2 && determined.getY() == 0) {
+				g.drawLine(20, 393, 128, 393);
+				g.drawLine(20, 393, 20, 525);
+				g.drawLine(20, 525, 128, 525);
+				g.drawLine(128, 525, 128, 393);
+			} else if (determined.getX() == 2 && determined.getY() == 1) {
+				g.drawLine(178, 393, 307, 393);
+				g.drawLine(178, 393, 178, 528);
+				g.drawLine(178, 528, 307, 528);
+				g.drawLine(307, 528, 307, 393);
+			} else if (determined.getX() == 2 && determined.getY() == 2) {
+				g.drawLine(362, 394, 480, 394);
+				g.drawLine(362, 394, 362, 528);
+				g.drawLine(362, 528, 480, 528);
+				g.drawLine(480, 528, 480, 394);
+			}
+		}
+
+	}
+
+	// drawing a string onto the screen
+	public void draw(Graphics g, String text, int x, int y) {
+		for (String line : text.split("\n"))
+			g.drawString(line, x, y += g.getFontMetrics().getHeight());
+	}
+
+	// getting row and col from coordinates
+	private Point getCoordinates(int num, char way) {
+		// padding and board measurements both directions
+		int[] horiz = { 31, 23, 27, 27, 92, 23, 27, 27, 100, 23, 27, 27, 70 };
+		int[] vert = { 46, 27, 39, 28, 80, 27, 39, 28, 82, 27, 39, 28, 48 };
+		int[] choice = {};
+
+		// selecting appropriate board
+		if (way == 'h') {
+			choice = horiz;
+		} else {
+			choice = vert;
+		}
+
+		int sum = 0;
+		int pos = 0;
+		// finding where on the board the click was
+		for (int i = 0; i < choice.length; i++) {
+			sum += choice[i];
+			// where sum is greater than click location
+			if (sum + 6 > num) {
+				pos = i;
+				break;
+			}
+		}
+
+		// transferring click location to point
+		switch (pos) {
+		case 1:
+			return new Point(1, 1);
+		case 2:
+			return new Point(1, 2);
+		case 3:
+			return new Point(1, 3);
+		case 5:
+			return new Point(2, 1);
+		case 6:
+			return new Point(2, 2);
+		case 7:
+			return new Point(2, 3);
+		case 9:
+			return new Point(3, 1);
+		case 10:
+			return new Point(3, 2);
+		case 11:
+			return new Point(3, 3);
+		case 12:
+			return new Point(3, 3);
+		}
+		return null;
+	}
+
+	// method for doing things off click
+	public void mousePressed(int x, int y) {
+		mouseX = x;
+		mouseY = y;
+		// converting mouse location to board point
+		Point p1 = getCoordinates(mouseX, 'h');
+		Point p2 = getCoordinates(mouseY, 'v');
+		Point userLarge = null;
+		Point userSmall = null;
+		int error = 0;
+
+		try {
+			userLarge = new Point(p2.getX() - 1, p1.getX() - 1);
+			userSmall = new Point(p2.getY() - 1, p1.getY() - 1);
+			// if user doesn't click in correct large square
+			if ((determined != null && determined.getX() != -1)
+					&& (userLarge.getX() != determined.getX() || userLarge.getY() != determined.getY())) {
+				throw new Exception();
+			}
+
+			// place piece, update, and check winner
+			game.placePiece(userLarge, userSmall, 'X');
+			repaint();
+			if (game.hasWon()) {
+				JOptionPane.showMessageDialog(new JFrame(), "YOU WIN!!", "Game over!!", JOptionPane.PLAIN_MESSAGE);
+				System.exit(0);
+			}
+		} catch (Exception e) { // show any errors
+			error = 1;
+			JOptionPane.showMessageDialog(new JFrame(), "Invalid move!", "Error!", JOptionPane.ERROR_MESSAGE);
+		}
+
+		// computer's turn
+		if (error == 0) {
+
+			Point[] compMove = game.makeCompMove(userSmall);
+
+			// delay user and computer's moves
+			timer = new Timer(1000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// place computer's piece
+					try {
+						game.placePiece(compMove[0], compMove[1], 'O');
+					} catch (Exception e2) {
+					}
+
+					// update board and check winner
+					repaint();
+					if (game.hasWon()) {
+						JOptionPane.showMessageDialog(new JFrame(), "YOU LOSE!!", "Game over!!",
+								JOptionPane.PLAIN_MESSAGE);
+						System.exit(0);
+					}
+
+					// determined user's next move
+					Point userLarge2 = game.determineLargePos(compMove[1]);
+					determined = userLarge2;
+
+					timer.stop();
+				}
+			});
+			timer.start();
+		}
+
+	}
+
+}
